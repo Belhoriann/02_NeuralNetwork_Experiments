@@ -6,16 +6,23 @@ def sigmoid(x):
 def sigmoid_derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
+# Neural net properties
+input_neuron = 12
+hidden_neuron = 20
+output_neuron = 1
+
+# The aim of this NN is to recognize the number 1, drawn with a 4x3 matrix
 class NeuralNetwork:
+
     def __init__(self, x, y):
         self.input = x
-        self.weights1 = np.random.rand(self.input.shape[1],4)
-        self.weights2 = np.random.rand(4,1)
+        self.weights1 = np.random.rand(self.input.size, hidden_neuron)
+        self.weights2 = np.random.rand(hidden_neuron, output_neuron)
         self.y = y
-        self.output = np.zeros(y.shape)
+        self.output = 0
 
     def feedforward(self):
-        self.layer1 = sigmoid(np.dot(self.input, self.weights1))
+        self.layer1 = sigmoid(np.sum(self.input * self.weights1))
         self.output = sigmoid(np.dot(self.layer1, self.weights2))
 
     def backprop(self):
@@ -29,18 +36,22 @@ class NeuralNetwork:
         self.weights1 += d_weights1
         self.weights2 += d_weights2
 
-
 if __name__ == "__main__":
-    X = np.array([[0,0,1],
-                  [0,1,1],
-                  [1,0,1],
-                  [1,1,1]])
-    y = np.array([[0],[1],[1],[0]])
+    X = np.array([[0], [1], [0],
+                  [1], [1], [0],
+                  [0], [1], [0],
+                  [1], [1], [1]])
+
+    y = 1
     nn = NeuralNetwork(X,y)
 
-    for i in range(5000):
-        nn.feedforward()
-        nn.backprop()
+    for i in range(10):
+       nn.feedforward()
+       nn.backprop()
 
-    print(nn.output)
+#a = nn.input.flatten()
+#print(a.reshape(-1,1))
+#print(nn.weights1)
+#print(nn.weights1)
+#print(X)
     #print(nn.loss)
