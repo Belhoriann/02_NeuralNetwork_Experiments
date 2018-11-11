@@ -1,57 +1,70 @@
-import numpy as np    
+import numpy as np 
+import matplotlib as mpl   
 
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
 
 def sigmoid_derivative(x):
-    return sigmoid(x) * (1 - sigmoid(x))
+    return x * (1 - x)
 
 # Neural net properties (1 output neuron)
 input_neuron = 12
-hidden_neuron = 4
+hidden_neuron = 20
+output_neuron = 10
 
 # The aim of this NN is to recognize the number 1, drawn with a 4x3 matrix
 class NeuralNetwork:
 
     def __init__(self, x, y):
         self.input = x
-        self.weights1 = np.random.rand(self.input.shape[1], hidden_neuron)
-        self.weights2 = np.random.rand(hidden_neuron, 1)
+        self.weights1 = np.random.rand(self.input.size, hidden_neuron)
+        self.weights2 = np.random.rand(hidden_neuron, output_neuron)
         self.y = y
         self.output = 0
 
     def feedforward(self):
-        self.layer1 = sigmoid(np.dot(self.input, self.weights1))
-        self.output = sigmoid(np.dot(self.layer1, self.weights2))
+        self.layer1 = sigmoid(np.dot(self.input.T, self.weights1))
+        self.output = sigmoid(np.dot(self.layer1, self.weights2).T)
 
     def backprop(self):
-        # Cost function C = (input - output)²
+        # Cost function C = (output - input)²
         # We have to calculate the derivative of L with respect to the weights
-        self.cost = (self.y - self.output) * (self.y - self.output)
-        #d_weights2 = np.dot(self.layer1.T, 2*(self.y - self.output) * sigmoid_derivative(self.output))
-        #d_weights1 = np.dot(self.input.T, (np.dot(2*(self.y - self.output) * sigmoid_derivative(self.output), self.weights2.T) * sigmoid_derivative(self.layer1)))
+        self.d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * sigmoid_derivative(self.output)).T)
+        self.d_weights1 = np.dot(self.input,  (np.dot(2*((self.y - self.output) * sigmoid_derivative(self.output)).T, self.weights2.T) * sigmoid_derivative(self.layer1)))
 
         # update the weights with the derivative (slope) of the loss function
-        #self.weights1 += d_weights1
-        #self.weights2 += d_weights2
+        self.weights1 += self.d_weights1
+        self.weights2 += self.d_weights2
 
 if __name__ == "__main__":
-    X = np.array([[0], [1], [0],
-                  [1], [1], [0],
-                  [0], [1], [0],
-                  [1], [1], [1]])
+    w = 255
+    X1 = np.array([[0], [w], [0],
+                   [w], [w], [0],
+                   [0], [w], [0],
+                   [w], [w], [w]])
 
-    y = np.array([[1],[0],[0],[0],[0],[0],[0],[0],[0],[0]])
-    nn = NeuralNetwork(X,y)
+    y1 = np.array([[1],[0],[0],[0],[0],[0],[0],[0],[0],[0]])
 
-    for i in range(100):
+    X4 = np.array([[0], [w], [0],
+                   [w], [w], [0],
+                   [w], [w], [w],
+                   [0], [w], [0]])
+
+    y4 = np.array([[0],[0],[0],[1],[0],[0],[0],[0],[0],[0]])
+    nn = NeuralNetwork(X4,y4)
+
+    for i in range(1000):
         nn.feedforward()
-        #nn.backprop()
+        nn.backprop()
 
 #a = nn.input.flatten()
-#print(a.reshape(-1,1))
+#print(y)
+#print(nn.input)
 #print(nn.weights1)
 #print(nn.layer1)
 #print(nn.weights2)
-#print(nn.cost)
+#print(nn.d_weights1)
+#print(nn.d_weights2)
 print(nn.output)
+#print(nn.cost)
+
