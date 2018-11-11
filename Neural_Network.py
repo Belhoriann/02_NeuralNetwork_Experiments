@@ -1,5 +1,8 @@
-import numpy as np 
-import matplotlib as mpl   
+#%%
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
 
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
@@ -9,8 +12,10 @@ def sigmoid_derivative(x):
 
 # Neural net properties (1 output neuron)
 input_neuron = 12
-hidden_neuron = 20
+hidden_neuron = 10
 output_neuron = 10
+iteration = 100
+cost = np.array([[0],[0]])
 
 # The aim of this NN is to recognize the number 1, drawn with a 4x3 matrix
 class NeuralNetwork:
@@ -36,6 +41,8 @@ class NeuralNetwork:
         self.weights1 += self.d_weights1
         self.weights2 += self.d_weights2
 
+
+# Launch digit recognition
 if __name__ == "__main__":
     w = 255
     X1 = np.array([[0], [w], [0],
@@ -53,18 +60,29 @@ if __name__ == "__main__":
     y4 = np.array([[0],[0],[0],[1],[0],[0],[0],[0],[0],[0]])
     nn = NeuralNetwork(X4,y4)
 
-    for i in range(1000):
+    for i in range(iteration):
         nn.feedforward()
         nn.backprop()
+        
+        err = nn.y - nn.output
+        c = np.sum(err * err)
+        if i == 0:
+            cost = np.array([[0],[c]])
+        else:
+            c_list = np.array([[i],[c]])
+            cost = np.concatenate((cost, c_list), axis=1)
+        
+# Plot & print all variables of the NN
 
-#a = nn.input.flatten()
-#print(y)
+plt.plot(cost[0], cost[1])
+plt.show()
+
 #print(nn.input)
 #print(nn.weights1)
 #print(nn.layer1)
 #print(nn.weights2)
 #print(nn.d_weights1)
 #print(nn.d_weights2)
-print(nn.output)
-#print(nn.cost)
+#print(nn.output)
+#print(cost.T)
 
