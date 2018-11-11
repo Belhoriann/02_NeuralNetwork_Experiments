@@ -5,44 +5,43 @@ import matplotlib as mpl
 import numpy as np
 
 def sigmoid(x):
-    return 1.0/(1+np.exp(-x))
+    return 1.0 / (1 + np.exp(-x))
 
 def sigmoid_derivative(x):
     return x * (1 - x)
 
-# Neural net properties (1 output neuron)
-input_neuron = 12
-hidden_neuron = 10
-output_neuron = 10
-iteration = 100
-cost = np.array([[0],[0]])
+# Neural net properties
+input_neuron = 12           # Number of input neurons, depends on the number of features/pixels to consider
+hidden_neuron = 7           # Number of neurons in the hidden layer. Quick rule of thumb (input neurons + output neurons)^0.5 + 5-10
+output_neuron = 10          # Number of output neurons, depends on the desired answered
+iteration = 500             # Number of iteration for training
+cost = np.array([[0],[0]])  # Initializations of the Cost array that we plot at the end
 
-# The aim of this NN is to recognize the number 1, drawn with a 4x3 matrix
+# The aim of this NN is to recognize 0-9 digits
 class NeuralNetwork:
 
     def __init__(self, x, y):
-        self.input = x
-        self.weights1 = np.random.rand(self.input.size, hidden_neuron)
-        self.weights2 = np.random.rand(hidden_neuron, output_neuron)
-        self.y = y
-        self.output = 0
+        self.input = x                                                  # Init input variable
+        self.weights1 = np.random.rand(self.input.size, hidden_neuron)  # Init of first weights matrix, between input and hidden layers (number of input neurons * number of hidden neurons)
+        self.weights2 = np.random.rand(hidden_neuron, output_neuron)    # Init of second weights matrix, between hidden and output layers
+        self.y = y                                                      # Init of the true response array 
+        self.output = np.zeros(y.shape)                                 # Init of the output array
 
     def feedforward(self):
-        self.layer1 = sigmoid(np.dot(self.input.T, self.weights1))
-        self.output = sigmoid(np.dot(self.layer1, self.weights2).T)
+        self.layer1 = sigmoid(np.dot(self.input.T, self.weights1))      # Compute of activation function of hidden neurons
+        self.output = sigmoid(np.dot(self.layer1, self.weights2).T)     # Compute of activation of output neurons
 
     def backprop(self):
         # Cost function C = (output - input)²
-        # We have to calculate the derivative of L with respect to the weights
+        # We have to calculate the derivative of C with respect to each weights matrix
         self.d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * sigmoid_derivative(self.output)).T)
         self.d_weights1 = np.dot(self.input,  (np.dot(2*((self.y - self.output) * sigmoid_derivative(self.output)).T, self.weights2.T) * sigmoid_derivative(self.layer1)))
 
-        # update the weights with the derivative (slope) of the loss function
+        # update the weights with new value, whose sign is dependant of the derivative (slope) of the Cost function
         self.weights1 += self.d_weights1
         self.weights2 += self.d_weights2
 
-
-# Launch digit recognition
+## Launch digit recognition ##
 if __name__ == "__main__":
     w = 255
     X1 = np.array([[0], [w], [0],
@@ -64,15 +63,16 @@ if __name__ == "__main__":
         nn.feedforward()
         nn.backprop()
         
-        err = nn.y - nn.output
-        c = np.sum(err * err)
+        # Code for storing the Cost value at iteration i
+        err = nn.y - nn.output                              # The error is the difference between what we want and the output
+        c = np.sum(err * err)                               # We compute the Cost array and add each members to obtain a global value
         if i == 0:
-            cost = np.array([[0],[c]])
+            cost = np.array([[0],[c]])                      # Init of the cost array 
         else:
-            c_list = np.array([[i],[c]])
-            cost = np.concatenate((cost, c_list), axis=1)
+            c_list = np.array([[i],[c]])                    # Temp array listing the cost(i)
+            cost = np.concatenate((cost, c_list), axis=1)   # We add the cost(i) array at the end of the global cost array
         
-# Plot & print all variables of the NN
+## Plot & print all variables of the NN ##
 
 plt.plot(cost[0], cost[1])
 plt.show()
@@ -83,6 +83,6 @@ plt.show()
 #print(nn.weights2)
 #print(nn.d_weights1)
 #print(nn.d_weights2)
-#print(nn.output)
-#print(cost.T)
+print(nn.output)
+print(cost)
 
