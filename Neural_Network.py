@@ -11,10 +11,10 @@ def sigmoid_derivative(x):
     return x * (1 - x)
 
 # Neural net properties
-input_neuron = 12           # Number of input neurons, depends on the number of features/pixels to consider
-hidden_neuron = 7           # Number of neurons in the hidden layer. Quick rule of thumb (input neurons + output neurons)^0.5 + 5-10
+input_neuron = 25           # Number of input neurons, depends on the number of features/pixels to consider
+hidden_neuron = 5           # Number of neurons in the hidden layer. Quick rule of thumb (input neurons + output neurons)^0.5 + 5-10
 output_neuron = 10          # Number of output neurons, depends on the desired answered
-iteration = 500             # Number of iteration for training
+iteration = 25            # Number of iteration for training
 cost = np.array([[0],[0]])  # Initializations of the Cost array that we plot at the end
 
 # The aim of this NN is to recognize 0-9 digits
@@ -44,10 +44,12 @@ class NeuralNetwork:
 ## Launch digit recognition ##
 if __name__ == "__main__":
     w = 255
-    X1 = np.array([[0], [w], [0],
-                   [w], [w], [0],
-                   [0], [w], [0],
-                   [w], [w], [w]])
+    X1 = np.array([[0], [0], [w], [0], [0],
+                   [0], [w], [w], [0], [0],
+                   [w], [0], [w], [0], [0],
+                   [0], [0], [w], [0], [0],
+                   [0], [0], [w], [0], [0],
+                   [0], [w], [w], [w], [0]])
 
     y1 = np.array([[1],[0],[0],[0],[0],[0],[0],[0],[0],[0]])
 
@@ -57,7 +59,7 @@ if __name__ == "__main__":
                    [0], [w], [0]])
 
     y4 = np.array([[0],[0],[0],[1],[0],[0],[0],[0],[0],[0]])
-    nn = NeuralNetwork(X4,y4)
+    nn = NeuralNetwork(X1,y1)
 
     for i in range(iteration):
         nn.feedforward()
@@ -84,5 +86,5 @@ plt.show()
 #print(nn.d_weights1)
 #print(nn.d_weights2)
 print(nn.output)
-print(cost)
+#print(cost)
 
